@@ -105,16 +105,35 @@ class CurrencyComparer:
     def get_currency_names(self):
         return [f"{cd.name} ({cd.id})" for cd in self.__currencies]
 
-    def get_currency_price_by_ids(self, id_what: str, id_in_what: str) -> float:
+    # def get_currency_price_by_ids(self, id_what: str, id_in_what: str) -> float:
+    #     if not self.is_valid_id(id_what):
+    #         raise ExceptionCurrencyName(id_what)
+    #     if not self.is_valid_id(id_in_what):
+    #         raise ExceptionCurrencyName(id_in_what)
+    #
+    #     cvp = self._get_cvp(id_what, id_in_what)
+    #     return cvp.price
+
+    def get_cvp_by_ids(self, id_what: str, id_in_what: str) -> CurrencyValuePair:
         if not self.is_valid_id(id_what):
             raise ExceptionCurrencyName(id_what)
         if not self.is_valid_id(id_in_what):
             raise ExceptionCurrencyName(id_in_what)
 
         cvp = self._get_cvp(id_what, id_in_what)
-        return cvp.price
+        return cvp
 
-    def get_currency_price_by_captions(self, caption_what: str, caption_in_what: str) -> float:
+    # def get_currency_price_by_captions(self, caption_what: str, caption_in_what: str) -> float:
+    #     id1 = self.get_id_by_caption(caption_what)
+    #     if not id1:
+    #         raise ExceptionCurrencyName(caption_what)
+    #     id2 = self.get_id_by_caption(caption_in_what)
+    #     if not id2:
+    #         raise ExceptionCurrencyName(caption_in_what)
+    #
+    #     return self.get_currency_price_by_ids(id1, id2)
+
+    def get_cvp_by_captions(self, caption_what: str, caption_in_what: str) -> CurrencyValuePair:
         id1 = self.get_id_by_caption(caption_what)
         if not id1:
             raise ExceptionCurrencyName(caption_what)
@@ -122,17 +141,26 @@ class CurrencyComparer:
         if not id2:
             raise ExceptionCurrencyName(caption_in_what)
 
-        return self.get_currency_price_by_ids(id1, id2)
+        return self.get_cvp_by_ids(id1, id2)
+
+    def get_currency_name_by_id(self, id: str) -> str:
+        cdid = self._get_cdid_by_id(id)
+        if cdid != -1:
+            return self.__currencies[cdid].name
+        else:
+            ExceptionCurrencyName(id)
 
 
 class CurrencyComparerCached(CurrencyComparer):
-    def __init__(self, cacher: Cacher, calculator: CurrencyCalculator):
+    def __init__(self, cacher: Cacher, calculator: CurrencyCalculator, settings: Settings):
         super().__init__()
         self.__cacher = cacher
         self.__calculator = calculator
+        self.__settings = settings
 
     def _get_caching_time(self):
-        raise ExceptionAbstract("CurrencyComparerCached.get_caching_time")
+        # raise ExceptionAbstract("CurrencyComparerCached.get_caching_time")
+        return self.__settings.caching_time
 
     @staticmethod
     def _cvp_str_to_obj(cvp_str: str) -> CurrencyValuePair:

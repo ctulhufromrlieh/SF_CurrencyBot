@@ -24,9 +24,9 @@ class CurrencyCalculatorCryptocompare(CurrencyCalculator):
         r = requests.get(req_str)
         if r.status_code == 200:
             response = json.loads(r.content)
-            print(r.content)
-            print("------------------------")
-            print(response)
+            # print(r.content)
+            # print("------------------------")
+            # print(response)
 
             price = response.get(id2)
             return price
